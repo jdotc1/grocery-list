@@ -1,7 +1,7 @@
 # Grocery List CRUD App
 
-[![pages-build-deployment](https://github.com/milliorn/Grocery-List/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/milliorn/Grocery-List/actions/workflows/pages/pages-build-deployment)
-[![CodeQL](https://github.com/milliorn/Grocery-List/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/milliorn/Grocery-List/actions/workflows/github-code-scanning/codeql)
+[![pages-build-deployment](https://github.com/milliorn/grocery-list/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/milliorn/grocery-list/actions/workflows/pages/pages-build-deployment)
+[![CodeQL](https://github.com/milliorn/grocery-list/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/milliorn/grocery-list/actions/workflows/github-code-scanning/codeql)
 
 A fast, fully client-side grocery list manager built with **React 19**, **TypeScript**, **Vite**, and **Tailwind CSS v4**. Add items with quantities, edit them in place, and delete when done. Everything is saved to the browser's `localStorage` with no backend, no account, and only minimal on-demand network activity for lazily loaded features after the initial page load.
 
@@ -100,7 +100,12 @@ grocery-list/
 ├── .github/
 │   ├── dependabot.yml          # Monthly dependency updates (npm + Actions)
 │   └── workflows/
-│       └── automerge.yml       # Auto-approve/merge Dependabot patch & minor PRs
+│       ├── automerge.yml       # Auto-review eligible Dependabot updates
+│       ├── ci.yml              # PR formatting, linting, type-checking, and build
+│       ├── dependabot-rebase-cascade.yml # Request rebases after Dependabot merges
+│       ├── dependency-review.yml # Scan dependency changes for vulnerabilities
+│       ├── label.yml           # Automatically label pull requests
+│       └── merge-gatekeeper.yml # Aggregate required merge checks
 ├── public/
 │   ├── android-chrome-192x192.png
 │   ├── android-chrome-512x512.png
@@ -172,8 +177,8 @@ You do **not** need any API keys, environment variables, or accounts to run this
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/milliorn/Grocery-List.git
-cd Grocery-List
+git clone https://github.com/milliorn/grocery-list.git
+cd grocery-list
 ```
 
 ### 2. Install dependencies
@@ -460,7 +465,7 @@ Additional strictness rules enabled:
 | `no-var`                                           | error | No `var`; use `let` or `const`                |
 | `prefer-const`                                     | error | Use `const` when variable is never reassigned |
 | `curly`                                            | error | Require braces for all control structures     |
-| `@typescript-eslint/explicit-function-return-type` | warn  | Explicit return types on functions            |
+| `@typescript-eslint/explicit-function-return-type` | error | Explicit return types on functions            |
 | `@typescript-eslint/no-explicit-any`               | error | No `any` type                                 |
 | `@typescript-eslint/strict-boolean-expressions`    | error | No unintended type coercions in conditions    |
 | `@typescript-eslint/no-unsafe-assignment`          | error | No unsafe assignments                         |
@@ -548,6 +553,14 @@ To install the app on a mobile device, open the live URL in Chrome or Safari and
 ## CI/CD and Automation
 
 ### GitHub Actions
+
+The workflow definitions live in [`.github/workflows/`](.github/workflows/). In particular:
+
+- **CI** (`ci.yml`) runs formatting, ESLint, TypeScript checks, and a production build for pull requests to `main`.
+- **Dependency review** (`dependency-review.yml`) checks PR dependency changes against known vulnerabilities.
+- **PR labeling** (`label.yml`) assigns labels when pull requests are opened or updated.
+- **Merge gatekeeper** (`merge-gatekeeper.yml`) runs the aggregate merge-status check for pull requests to `main`.
+- **Dependabot rebase cascade** (`dependabot-rebase-cascade.yml`) requests rebases on other open Dependabot PRs after a Dependabot PR merges.
 
 **Pages build and deployment** triggers on every push, building and publishing the site to GitHub Pages. Status is shown by the badge at the top of this README.
 
